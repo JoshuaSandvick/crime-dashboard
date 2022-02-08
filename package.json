@@ -10,7 +10,7 @@
     "dev": "concurrently --kill-others-on-fail \"npm run client\" \"npm run server\"",
     "client:build": "cd client && npm run build",
     "server:build": "tsc -p .",
-    "build": "npm run client:build && npm run server:build",
+    "both:build": "npm run client:build && npm run server:build",
     "start": "node server/build/server.js"
   },
   "repository": {
