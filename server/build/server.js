@@ -29,9 +29,9 @@ app.use((0, cors_1.default)());
 app.use("/api/v1/", routes_1.default);
 // This middleware informs the express application to serve our compiled React files
 if (process.env.NODE_ENV === "production") {
-    app.use(express_1.default.static(path_1.default.join(__dirname, "/../client/build")));
+    app.use(express_1.default.static(path_1.default.join(__dirname, "/../../client/build")));
     app.get("*", function (req, res) {
-        res.sendFile(path_1.default.join(__dirname, "../client/build", "index.html"));
+        res.sendFile(path_1.default.join(__dirname, "../../client/build", "index.html"));
     });
 }
 // Catch any bad requests
