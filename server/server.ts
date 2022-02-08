@@ -3,6 +3,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import path from "path";
+import api from "./routes/routes";
 
 // Create a new express application named 'app'
 const app = express();
@@ -26,9 +27,6 @@ app.use(
 
 // Configure the CORs middleware
 app.use(cors());
-
-// Require Route
-const api = require("./routes/routes");
 
 // Configure app to use route
 app.use("/api/v1/", api);

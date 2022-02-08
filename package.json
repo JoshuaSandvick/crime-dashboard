@@ -9,7 +9,9 @@
     "server": "nodemon server/server.ts",
     "dev": "concurrently --kill-others-on-fail \"npm run client\" \"npm run server\"",
     "client:build": "cd client && npm run build",
-    "start": "nodemon server/server.ts"
+    "server:build": "tsc -p .",
+    "build": "npm run client:build && npm run server:build",
+    "start": "node server/build/server.js"
   },
   "repository": {
     "type": "git",

@@ -5,4 +5,4 @@ import { getDemographics, getCount } from "./../controllers/controllers";
 router.post("/get-demographics", getDemographics);
 router.post("/get-counts", getCount);
 
-module.exports = router;
+export default router;
