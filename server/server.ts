@@ -1,8 +1,8 @@
 // Import dependencies
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const path = require("path");
+import express from "express";
+import bodyParser from "body-parser";
+import cors from "cors";
+import path from "path";
 
 // Create a new express application named 'app'
 const app = express();
@@ -34,10 +34,7 @@ const api = require("./routes/routes");
 app.use("/api/v1/", api);
 
 // This middleware informs the express application to serve our compiled React files
-if (
-  process.env.NODE_ENV === "production" ||
-  process.env.NODE_ENV === "staging"
-) {
+if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "/../client/build")));
 
   app.get("*", function (req, res) {
