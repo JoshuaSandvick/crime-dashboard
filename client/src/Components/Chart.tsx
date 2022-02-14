@@ -46,18 +46,27 @@ export const ChartComponent: React.FC<ChartProps> = (props: ChartProps) => {
 
 function CreateChart(data: any, id: string, chartType: string): void {
     nv.addGraph(function () {
+        let chart: nv.Chart;
         switch (chartType) {
             case 'DonutChart':
-                return CreateDonutChart(data, id);
+                chart = CreateDonutChart(data, id);
+                break;
             case 'BarChart':
-                return CreateBarChart(data, id);
+                chart = CreateBarChart(data, id);
+                break;
             case 'MultiBarChart':
-                return CreateMultiBarChart(data, id);
+                chart = CreateMultiBarChart(data, id);
+                break;
             case 'LinePlusBarChart':
-                return CreateLinePlusBarChart(data, id);
+                chart = CreateLinePlusBarChart(data, id);
+                break;
             default:
-                return CreateDonutChart(data, id); // Need to make actual undefined case
+                chart = CreateDonutChart(data, id); // Need to make actual undefined case
+                break;
         }
+
+        nv.utils.windowResize(chart.update);
+        return chart;
     });
 }
 
