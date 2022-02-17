@@ -66,18 +66,19 @@ function crimeStateReducer(state: CrimeWidgetState, action: CrimeWidgetAction): 
             throw new Error();
     }
 
-    let { location, offense, demographic, year, chartType, dataType } = nextState;
-    if (
-        location &&
-        offense &&
-        demographic &&
-        chartType &&
-        (year || dataType === 'CountsOfOffense')
-    ) {
-        nextState.showChart = true;
-    }
+    setShowChart(nextState);
 
     return nextState;
+}
+
+function setShowChart(state: CrimeWidgetState): void {
+    const { location, offense, demographic, year, chartType, dataType } = state;
+    state.showChart =
+        location && offense && demographic && chartType && (year || dataType === 'CountsOfOffense')
+            ? true
+            : false;
+
+    return;
 }
 
 const CrimeWidget: React.FC<WidgetChildProps> = (props) => {
@@ -118,19 +119,21 @@ const CrimeWidget: React.FC<WidgetChildProps> = (props) => {
             <Stack spacing={0} sx={{ height: '100%' }}>
                 <CrimeOptionSelects parentState={state} dispatch={dispatch} />
                 {showChart && (
-                    <ChartComponent
-                        key={'chart' + id}
-                        id={'chart' + id}
-                        datasetConfig={{
-                            state: location as string,
-                            year: year ? (year as number) : undefined,
-                            party: 'offender',
-                            offense: offense as string,
-                            demographic: demographic as string,
-                        }}
-                        url={GetURLForDataType(dataType as string)}
-                        chartType={chartType as string}
-                    />
+                    <Box height="100%">
+                        <ChartComponent
+                            key={'chart' + id}
+                            id={'chart' + id}
+                            datasetConfig={{
+                                state: location as string,
+                                year: year ? (year as number) : undefined,
+                                party: 'offender',
+                                offense: offense as string,
+                                demographic: demographic as string,
+                            }}
+                            url={GetURLForDataType(dataType as string)}
+                            chartType={chartType as string}
+                        />
+                    </Box>
                 )}
             </Stack>
         </Box>

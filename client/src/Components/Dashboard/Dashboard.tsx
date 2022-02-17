@@ -33,7 +33,7 @@ const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
             </Box>
             <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                 {widgetIDs.map((id) => (
-                    <Grid item xs={2} sm={4} md={4} key={id} sx={{ height: '300px' }}>
+                    <Grid item xs={2} sm={4} md={4} key={id} sx={{ height: '400px' }}>
                         <Widget
                             id={id}
                             isActivatedCallback={widgetWasActivated}

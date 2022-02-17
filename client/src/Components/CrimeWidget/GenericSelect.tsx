@@ -1,5 +1,12 @@
 import React from 'react';
-import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import {
+    FormControl,
+    FormHelperText,
+    InputLabel,
+    Select,
+    MenuItem,
+    SelectChangeEvent,
+} from '@mui/material';
 import { SxProps, Theme } from '@mui/system';
 
 export interface SelectOption {
@@ -19,7 +26,7 @@ const GenericSelect = <T extends unknown>(props: GenericSelectProps<T>) => {
     const { title, value, handleSelect, options, sx = [] } = props;
 
     return (
-        <FormControl fullWidth={false} size="small" sx={sx}>
+        <FormControl required={value === undefined} fullWidth={false} size="small" sx={sx}>
             <InputLabel id="selectLabel">{title}</InputLabel>
             <Select
                 labelId="selectLabel"
@@ -31,6 +38,7 @@ const GenericSelect = <T extends unknown>(props: GenericSelectProps<T>) => {
                     <MenuItem value={option.value}>{option.displayValue}</MenuItem>
                 ))}
             </Select>
+            {value === undefined ? <FormHelperText>Required</FormHelperText> : <></>}
         </FormControl>
     );
 };
