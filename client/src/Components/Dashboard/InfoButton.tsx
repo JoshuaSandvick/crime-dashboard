@@ -4,9 +4,12 @@ import InfoIcon from '@mui/icons-material/Info';
 
 export interface InfoButtonProps {
     id?: string;
+    infoText: string;
 }
 
 export const InfoButton: React.FC<InfoButtonProps> = (props: InfoButtonProps) => {
+    const { infoText } = props;
+
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -43,7 +46,7 @@ export const InfoButton: React.FC<InfoButtonProps> = (props: InfoButtonProps) =>
                 }}
             >
                 <Typography sx={{ p: 2 }} variant="body2">
-                    Popover content
+                    {infoText}
                 </Typography>
             </Popover>
         </div>
