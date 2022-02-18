@@ -3,7 +3,7 @@ import nv from 'nvd3';
 import 'nvd3/build/nv.d3.css';
 import d3 from 'd3';
 import axios from 'axios';
-import { Box, Typography } from '@mui/material';
+import { Box, Typography, Grow } from '@mui/material';
 
 export interface ChartProps {
     id: string;
@@ -28,9 +28,12 @@ export const ChartComponent: React.FC<ChartProps> = (props: ChartProps) => {
         return { location, year, party, offense, demographic };
     }, [location, year, party, offense, demographic]);
 
-    const [showNoDataError, setShowNoDataError] = React.useState<boolean>();
+    const [showNoDataError, setShowNoDataError] = React.useState<boolean>(false);
+    const [graphIsCreated, setGraphIsCreated] = React.useState<boolean>(false);
 
     React.useEffect(() => {
+        setGraphIsCreated(false);
+
         async function fetchData() {
             const response = await axios({
                 method: 'post',
@@ -47,7 +50,9 @@ export const ChartComponent: React.FC<ChartProps> = (props: ChartProps) => {
         }
 
         d3.selectAll('#' + id + ' svg > *').remove();
-        fetchData().catch(console.error);
+        fetchData()
+            .then(() => setGraphIsCreated(true))
+            .catch(console.error);
     }, [chartType, id, url, datasetConfig]);
 
     return (
@@ -61,7 +66,9 @@ export const ChartComponent: React.FC<ChartProps> = (props: ChartProps) => {
             ) : (
                 <></>
             )}
-            <svg></svg>
+            <Grow in={graphIsCreated} timeout={300}>
+                <svg></svg>
+            </Grow>
         </span>
     );
 };

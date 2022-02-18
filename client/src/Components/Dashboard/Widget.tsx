@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import AddIcon from '@mui/icons-material/Add';
-import { Fab, Box, Paper, Typography, IconButton } from '@mui/material';
+import { Fab, Box, Paper, Typography, IconButton, Zoom } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { InfoButton } from './InfoButton';
 
@@ -21,30 +21,36 @@ const Widget: React.FC<WidgetProps> = (props: WidgetProps) => {
     const { id, isActivatedCallback, isRemovedCallback, children } = props;
 
     const [isActivated, setIsActivated] = React.useState<boolean>(false);
+    const [isClosed, setIsClosed] = React.useState<boolean>(false);
     const [infoText, setInfoText] = React.useState<string>('');
     const [title, setTitle] = React.useState<string>('');
 
-    const AddWidgetButton: React.FC = () => {
+    const AddWidgetButton: React.FC<{
+        setIsActivated(): void;
+    }> = ({ setIsActivated }) => {
         return (
-            <Box display="flex" justifyContent="center" flexDirection="column" height="100%">
-                <Box display="flex" justifyContent="center">
-                    <Fab
-                        color="primary"
-                        variant="extended"
-                        onClick={() => {
-                            setIsActivated(true);
-                            isActivatedCallback(id);
-                        }}
-                    >
-                        <AddIcon />
-                        Add Widget
-                    </Fab>
+            <Zoom in={true} timeout={400} exit={false}>
+                <Box display="flex" justifyContent="center" flexDirection="column" height="100%">
+                    <Box display="flex" justifyContent="center">
+                        <Fab
+                            color="primary"
+                            variant="extended"
+                            onClick={() => {
+                                setIsActivated();
+                            }}
+                        >
+                            <AddIcon />
+                            Add Widget
+                        </Fab>
+                    </Box>
                 </Box>
-            </Box>
+            </Zoom>
         );
     };
 
-    const WidgetHeader: React.FC = () => {
+    const WidgetHeader: React.FC<{
+        setIsClosed: (value: React.SetStateAction<boolean>) => void;
+    }> = ({ setIsClosed }) => {
         return (
             <Box
                 sx={{
@@ -75,7 +81,7 @@ const Widget: React.FC<WidgetProps> = (props: WidgetProps) => {
                     sx={{ mr: 2, margin: 0 }}
                     key={'resetState' + id}
                     onClick={() => {
-                        isRemovedCallback(id);
+                        setIsClosed(true);
                     }}
                 >
                     <ClearIcon />
@@ -85,14 +91,29 @@ const Widget: React.FC<WidgetProps> = (props: WidgetProps) => {
     };
 
     return isActivated ? (
-        <Paper sx={{ height: '100%' }}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-                <WidgetHeader />
-                {React.cloneElement(children, { id: id, setInfo: setInfoText, setTitle: setTitle })}
-            </Box>
-        </Paper>
+        <Zoom
+            in={!isClosed}
+            timeout={{ enter: 500, exit: 400 }}
+            onExited={() => isRemovedCallback(id)}
+        >
+            <Paper sx={{ height: '100%' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                    <WidgetHeader setIsClosed={setIsClosed} />
+                    {React.cloneElement(children, {
+                        id: id,
+                        setInfo: setInfoText,
+                        setTitle: setTitle,
+                    })}
+                </Box>
+            </Paper>
+        </Zoom>
     ) : (
-        <AddWidgetButton />
+        <AddWidgetButton
+            setIsActivated={() => {
+                setIsActivated(true);
+                isActivatedCallback(id);
+            }}
+        />
     );
 };
 
