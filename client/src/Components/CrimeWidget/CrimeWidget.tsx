@@ -63,7 +63,7 @@ function crimeStateReducer(state: CrimeWidgetState, action: CrimeWidgetAction): 
             nextState = { ...state, chartType: action.value };
             break;
         default:
-            throw new Error();
+            throw new Error('Unexpected reducer action type');
     }
 
     setShowChart(nextState);
@@ -124,7 +124,7 @@ const CrimeWidget: React.FC<WidgetChildProps> = (props) => {
                             key={'chart' + id}
                             id={'chart' + id}
                             datasetConfig={{
-                                state: location as string,
+                                location: location as string,
                                 year: year ? (year as number) : undefined,
                                 party: 'offender',
                                 offense: offense as string,

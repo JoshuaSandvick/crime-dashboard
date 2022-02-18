@@ -3,6 +3,7 @@ import nv from 'nvd3';
 import 'nvd3/build/nv.d3.css';
 import d3 from 'd3';
 import axios from 'axios';
+import { Box, Typography } from '@mui/material';
 
 export interface ChartProps {
     id: string;
@@ -12,7 +13,7 @@ export interface ChartProps {
 }
 
 interface DatasetRequestConfig {
-    state: string;
+    location: string;
     year?: number;
     party?: 'offender' | 'victim';
     offense: string;
@@ -20,26 +21,47 @@ interface DatasetRequestConfig {
 }
 
 export const ChartComponent: React.FC<ChartProps> = (props: ChartProps) => {
-    const { id, datasetConfig, url, chartType } = props;
+    const { id, url, chartType } = props;
+
+    const { location, year, party, offense, demographic } = props.datasetConfig;
+    const datasetConfig: DatasetRequestConfig = React.useMemo(() => {
+        return { location, year, party, offense, demographic };
+    }, [location, year, party, offense, demographic]);
+
+    const [showNoDataError, setShowNoDataError] = React.useState<boolean>();
 
     React.useEffect(() => {
         async function fetchData() {
-            const fetchedData = await axios({
+            const response = await axios({
                 method: 'post',
                 url: url,
                 data: datasetConfig,
             });
 
-            d3.selectAll('#' + id + ' svg > *').remove();
-            CreateChart(fetchedData.data.body, id, chartType);
+            if (Object.keys(response.data.body).length === 0) {
+                setShowNoDataError(true);
+            } else {
+                setShowNoDataError(false);
+                CreateChart(response.data.body, id, chartType);
+            }
         }
 
+        d3.selectAll('#' + id + ' svg > *').remove();
         fetchData().catch(console.error);
-    });
+    }, [chartType, id, url, datasetConfig]);
 
     return (
         <span id={id}>
-            <svg style={{}}></svg>
+            {showNoDataError ? (
+                <Box display="flex" justifyContent="center" flexDirection="column" height="100%">
+                    <Box display="flex" justifyContent="center">
+                        <Typography variant="h5">No Data Available</Typography>
+                    </Box>
+                </Box>
+            ) : (
+                <></>
+            )}
+            <svg></svg>
         </span>
     );
 };
@@ -55,14 +77,14 @@ function CreateChart(data: any, id: string, chartType: string): void {
                 chart = CreateBarChart(data, id);
                 break;
             case 'MultiBarChart':
-                chart = CreateMultiBarChart(data, id);
-                break;
+                throw new Error(
+                    'Multi-bar chart was passed in as the chart type, but there is no use case for these at this time.',
+                );
             case 'LinePlusBarChart':
                 chart = CreateLinePlusBarChart(data, id);
                 break;
             default:
-                chart = CreateDonutChart(data, id); // Need to make actual undefined case
-                break;
+                throw new Error('Unexpected chart type');
         }
 
         nv.utils.windowResize(chart.update);
@@ -79,11 +101,11 @@ function CreateDonutChart(data: any, id: string): nv.Chart {
         .y(function (d) {
             return d.value;
         })
-        .showLabels(true) //Display pie labels
-        .labelThreshold(0.05) //Configure the minimum slice size for labels to show up
-        .labelType('percent') //Configure what type of data to show in the label. Can be "key", "value" or "percent"
-        .donut(true) //Turn on Donut mode. Makes pie chart look tasty!
-        .donutRatio(0.35); //Configure how big you want the donut hole size to be.
+        .showLabels(true)
+        .labelThreshold(0.05)
+        .labelType('percent')
+        .donut(true)
+        .donutRatio(0.35);
     d3.select('#' + id + ' svg')
         .datum(data.values)
         .transition()
@@ -102,10 +124,8 @@ function CreateBarChart(data: any, id: string): nv.Chart {
         .y(function (d) {
             return d.value;
         })
-        .staggerLabels(true) //Too many bars and not enough room? Try staggering labels.
-        .showValues(true); //...instead, show the bar value right on top of each bar.
-
-    chart.tooltip.enabled(false);
+        .staggerLabels(true)
+        .showValues(true);
 
     d3.select('#' + id + ' svg')
         .datum([data])
@@ -123,10 +143,6 @@ function CreateMultiBarChart(data: any, id: string): nv.Chart {
         .showControls(false) //Allow user to switch between 'Grouped' and 'Stacked' mode.
         .groupSpacing(0.1); //Distance between each group of bars.
 
-    chart.tooltip.enabled(false);
-    //chart.xAxis.tickFormat(d3.format(',f'));
-    //chart.yAxis.tickFormat(d3.format(',.1f'));
-
     d3.select('#' + id + ' svg')
         .datum(data.values)
         .call(chart);
@@ -142,22 +158,10 @@ function CreateLinePlusBarChart(data: any, id: string): nv.Chart {
         .color(d3.scale.category10().range())
         .focusEnable(false);
 
-    /* chart.xAxis
-        .tickFormat(function (d) {
-            return d3.time.format('%x')(new Date(d));
-        })
-        .showMaxMin(false); */
-
     chart.y2Axis.tickFormat(function (d) {
         return d3.format('f')(d) + '%';
     });
     chart.bars.forceY([0]).padData(false);
-
-    /* chart.x2Axis
-        .tickFormat(function (d) {
-            return d3.time.format('%x')(new Date(d));
-        })
-        .showMaxMin(false); */
 
     data[0].bar = true;
 
@@ -166,12 +170,6 @@ function CreateLinePlusBarChart(data: any, id: string): nv.Chart {
         .transition()
         .duration(500)
         .call(chart);
-
-    //nv.utils.windowResize(chart.update);
-
-    chart.dispatch.on('stateChange', function (e) {
-        nv.log('New State:', JSON.stringify(e));
-    });
 
     return chart;
 }

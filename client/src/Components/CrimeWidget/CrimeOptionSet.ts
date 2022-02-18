@@ -29,7 +29,6 @@ abstract class CrimeOptionSet {
         { value: 'age', displayValue: 'Age' },
         { value: 'race', displayValue: 'Race' },
         { value: 'sex', displayValue: 'Sex' },
-        { value: 'count', displayValue: 'Count' },
         //{ value: 'relationship', displayValue: 'Relationship' },
     ];
 
@@ -42,10 +41,10 @@ abstract class CrimeOptionSet {
         { value: 2020, displayValue: 2020 },
     ];
 
-    static states: SelectOption[] = [
+    static locations: SelectOption[] = [
+        { value: 'USA', displayValue: 'United States of America' },
         { value: 'AL', displayValue: 'Alabama' },
         { value: 'AK', displayValue: 'Alaska' },
-        { value: 'AS', displayValue: 'American Samoa' },
         { value: 'AZ', displayValue: 'Arizona' },
         { value: 'AR', displayValue: 'Arkansas' },
         { value: 'CA', displayValue: 'California' },
@@ -53,7 +52,6 @@ abstract class CrimeOptionSet {
         { value: 'CT', displayValue: 'Connecticut' },
         { value: 'DE', displayValue: 'Delaware' },
         { value: 'DC', displayValue: 'District Of Columbia' },
-        { value: 'FM', displayValue: 'Federated States Of Micronesia' },
         { value: 'FL', displayValue: 'Florida' },
         { value: 'GA', displayValue: 'Georgia' },
         { value: 'GU', displayValue: 'Guam' },
@@ -66,7 +64,6 @@ abstract class CrimeOptionSet {
         { value: 'KY', displayValue: 'Kentucky' },
         { value: 'LA', displayValue: 'Louisiana' },
         { value: 'ME', displayValue: 'Maine' },
-        { value: 'MH', displayValue: 'Marshall Islands' },
         { value: 'MD', displayValue: 'Maryland' },
         { value: 'MA', displayValue: 'Massachusetts' },
         { value: 'MI', displayValue: 'Michigan' },
@@ -86,7 +83,6 @@ abstract class CrimeOptionSet {
         { value: 'OH', displayValue: 'Ohio' },
         { value: 'OK', displayValue: 'Oklahoma' },
         { value: 'OR', displayValue: 'Oregon' },
-        { value: 'PW', displayValue: 'Palau' },
         { value: 'PA', displayValue: 'Pennsylvania' },
         { value: 'PR', displayValue: 'Puerto Rico' },
         { value: 'RI', displayValue: 'Rhode Island' },

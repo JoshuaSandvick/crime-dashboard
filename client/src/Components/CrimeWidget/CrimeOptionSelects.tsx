@@ -30,7 +30,7 @@ const CrimeOptionSelects: React.FC<CrimeOptionSelectsProps> = ({ parentState, di
             </Grid>
             <Grid item xs={1} sx={{ flexGrow: 1 }}>
                 <GenericSelect
-                    title="State"
+                    title="Location"
                     value={location}
                     handleSelect={(event) =>
                         dispatch({
@@ -38,7 +38,7 @@ const CrimeOptionSelects: React.FC<CrimeOptionSelectsProps> = ({ parentState, di
                             value: event.target.value as string,
                         })
                     }
-                    options={CrimeOptionSet.states}
+                    options={CrimeOptionSet.locations}
                     sx={{ width: '100%' }}
                 />
             </Grid>
