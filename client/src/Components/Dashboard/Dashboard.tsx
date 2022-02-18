@@ -31,9 +31,9 @@ const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
                     </Toolbar>
                 </AppBar>
             </Box>
-            <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+            <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, md: 8, lg: 12 }}>
                 {widgetIDs.map((id) => (
-                    <Grid item xs={2} sm={4} md={4} key={id} sx={{ height: '400px' }}>
+                    <Grid item xs={4} key={id} sx={{ height: '400px' }}>
                         <Widget
                             id={id}
                             isActivatedCallback={widgetWasActivated}
