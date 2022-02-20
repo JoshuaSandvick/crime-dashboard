@@ -3,7 +3,7 @@ import nv from 'nvd3';
 import 'nvd3/build/nv.d3.css';
 import d3 from 'd3';
 import axios from 'axios';
-import { Box, Typography, Grow } from '@mui/material';
+import { Box, Typography, Grow, CircularProgress } from '@mui/material';
 
 export interface ChartProps {
     id: string;
@@ -29,11 +29,9 @@ export const ChartComponent: React.FC<ChartProps> = (props: ChartProps) => {
     }, [location, year, party, offense, demographic]);
 
     const [showNoDataError, setShowNoDataError] = React.useState<boolean>(false);
-    const [graphIsCreated, setGraphIsCreated] = React.useState<boolean>(false);
+    const [graphIsLoading, setGraphIsLoading] = React.useState<boolean>(false);
 
     React.useEffect(() => {
-        setGraphIsCreated(false);
-
         async function fetchData() {
             const response = await axios({
                 method: 'post',
@@ -49,26 +47,32 @@ export const ChartComponent: React.FC<ChartProps> = (props: ChartProps) => {
             }
         }
 
+        setGraphIsLoading(true);
         d3.selectAll('#' + id + ' svg > *').remove();
         fetchData()
-            .then(() => setGraphIsCreated(true))
+            .then(() => setGraphIsLoading(false))
             .catch(console.error);
     }, [chartType, id, url, datasetConfig]);
 
     return (
         <span id={id}>
-            {showNoDataError ? (
-                <Box display="flex" justifyContent="center" flexDirection="column" height="100%">
-                    <Box display="flex" justifyContent="center">
+            <Box display="flex" justifyContent="center" flexDirection="column" height="100%">
+                <Box
+                    display="flex"
+                    justifyContent="center"
+                    height={showNoDataError || graphIsLoading ? 'auto' : '100%'}
+                >
+                    {showNoDataError ? (
                         <Typography variant="h5">No Data Available</Typography>
-                    </Box>
+                    ) : graphIsLoading ? (
+                        <CircularProgress />
+                    ) : (
+                        <Grow in={true} timeout={300}>
+                            <svg height="100%"></svg>
+                        </Grow>
+                    )}
                 </Box>
-            ) : (
-                <></>
-            )}
-            <Grow in={graphIsCreated} timeout={300}>
-                <svg></svg>
-            </Grow>
+            </Box>
         </span>
     );
 };

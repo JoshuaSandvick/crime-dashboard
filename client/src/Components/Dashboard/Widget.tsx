@@ -93,7 +93,7 @@ const Widget: React.FC<WidgetProps> = (props: WidgetProps) => {
     return isActivated ? (
         <Zoom
             in={!isClosed}
-            timeout={{ enter: 500, exit: 400 }}
+            timeout={{ enter: 500, exit: 300 }}
             onExited={() => isRemovedCallback(id)}
         >
             <Paper sx={{ height: '100%' }}>
