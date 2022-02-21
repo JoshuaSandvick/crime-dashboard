@@ -31,19 +31,21 @@ const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
                     </Toolbar>
                 </AppBar>
             </Box>
-            <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, md: 8, lg: 12 }}>
-                {widgetIDs.map((id) => (
-                    <Grid item xs={4} key={id} sx={{ height: '400px' }}>
-                        <Widget
-                            id={id}
-                            isActivatedCallback={widgetWasActivated}
-                            isRemovedCallback={widgetWasRemoved}
-                        >
-                            {children}
-                        </Widget>
-                    </Grid>
-                ))}
-            </Grid>
+            <Box margin="5px">
+                <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, md: 8, lg: 12 }}>
+                    {widgetIDs.map((id) => (
+                        <Grid item xs={4} key={id} sx={{ height: '400px' }}>
+                            <Widget
+                                id={id}
+                                isActivatedCallback={widgetWasActivated}
+                                isRemovedCallback={widgetWasRemoved}
+                            >
+                                {children}
+                            </Widget>
+                        </Grid>
+                    ))}
+                </Grid>
+            </Box>
         </>
     );
 };

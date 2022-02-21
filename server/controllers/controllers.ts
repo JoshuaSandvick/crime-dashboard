@@ -1,11 +1,12 @@
 import { Request, Response } from "express";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError } from "axios";
 import {
   CreateGraphData,
   CreateCountDataAcrossYears,
   CreateCountPercentageChangedDataAcrossYears,
   DemographicDataFromCDE,
 } from "./DataConverters";
+import VisualizationData from "./VisualizationData";
 
 function getDemographicsURL(
   offense: string,
@@ -27,47 +28,66 @@ function getDemographicsURL(
 }
 
 export const getDemographics = async (req: Request, res: Response) => {
-  const apiResponse = await axios.get(
-    getDemographicsURL(
-      req.body.offense,
-      req.body.demographic,
-      req.body.location,
-      req.body.party
-    )
-  );
+  let dataForYear = undefined;
+  let responseBody: VisualizationData | {} = {};
 
-  const dataForYear = apiResponse.data.results.find(
-    (element: DemographicDataFromCDE) => element.data_year === req.body.year
-  );
+  try {
+    const apiResponse = await axios.get(
+      getDemographicsURL(
+        req.body.offense,
+        req.body.demographic,
+        req.body.location,
+        req.body.party
+      )
+    );
 
-  res.status(200).json({
-    body:
-      dataForYear != undefined
-        ? CreateGraphData(dataForYear, req.body.demographic)
-        : {},
-  });
+    dataForYear = apiResponse.data.results.find(
+      (element: DemographicDataFromCDE) => element.data_year === req.body.year
+    );
+
+    if (dataForYear != undefined) {
+      responseBody = CreateGraphData(dataForYear, req.body.demographic);
+    }
+  } catch (error) {
+    console.log((error as AxiosError).toJSON());
+  } finally {
+    res.status(200).json({
+      body: responseBody,
+    });
+  }
 };
 
 export const getCount = async (req: Request, res: Response) => {
-  const apiResponse = await axios.get(
-    getDemographicsURL(req.body.offense, "count", req.body.location, "offender")
-  );
+  let responseBody: VisualizationData[] | {} = {};
 
-  const results = apiResponse.data.results;
+  try {
+    const apiResponse = await axios.get(
+      getDemographicsURL(
+        req.body.offense,
+        "count",
+        req.body.location,
+        "offender"
+      )
+    );
 
-  res.status(200).json({
-    body:
-      results.length > 0
-        ? [
-            CreateCountDataAcrossYears(
-              apiResponse.data.results,
-              "Counts for " + req.body.location
-            ),
-            CreateCountPercentageChangedDataAcrossYears(
-              apiResponse.data.results,
-              "Percentage Changed of Counts for " + req.body.location
-            ),
-          ]
-        : {},
-  });
+    const results = apiResponse.data.results;
+    if (results.length > 0) {
+      responseBody = [
+        CreateCountDataAcrossYears(
+          apiResponse.data.results,
+          "Counts for " + req.body.location
+        ),
+        CreateCountPercentageChangedDataAcrossYears(
+          apiResponse.data.results,
+          "Percentage Changed of Counts for " + req.body.location
+        ),
+      ];
+    }
+  } catch (error) {
+    console.log((error as AxiosError).toJSON());
+  } finally {
+    res.status(200).json({
+      body: responseBody,
+    });
+  }
 };

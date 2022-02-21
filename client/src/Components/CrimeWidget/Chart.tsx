@@ -48,6 +48,7 @@ export const ChartComponent: React.FC<ChartProps> = (props: ChartProps) => {
         }
 
         setGraphIsLoading(true);
+        setShowNoDataError(false);
         d3.selectAll('#' + id + ' svg > *').remove();
         fetchData()
             .then(() => setGraphIsLoading(false))
@@ -68,7 +69,7 @@ export const ChartComponent: React.FC<ChartProps> = (props: ChartProps) => {
                         <CircularProgress />
                     ) : (
                         <Grow in={true} timeout={300}>
-                            <svg height="100%"></svg>
+                            <svg></svg>
                         </Grow>
                     )}
                 </Box>
