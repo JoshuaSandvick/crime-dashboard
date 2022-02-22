@@ -18,25 +18,44 @@ function getDemographicsURL(offense, demographic, location, party) {
         "?API_KEY=HjPXTM86aVOOEROPonTUllReA8n7T3mw9TcuaDtw");
 }
 const getDemographics = async (req, res) => {
-    const apiResponse = await axios_1.default.get(getDemographicsURL(req.body.offense, req.body.demographic, req.body.location, req.body.party));
-    const dataForYear = apiResponse.data.results.find((element) => element.data_year === req.body.year);
-    res.status(200).json({
-        body: dataForYear != undefined
-            ? (0, DataConverters_1.CreateGraphData)(dataForYear, req.body.demographic)
-            : {},
-    });
+    let dataForYear = undefined;
+    let responseBody = {};
+    try {
+        const apiResponse = await axios_1.default.get(getDemographicsURL(req.body.offense, req.body.demographic, req.body.location, req.body.party));
+        dataForYear = apiResponse.data.results.find((element) => element.data_year === req.body.year);
+        if (dataForYear != undefined) {
+            responseBody = (0, DataConverters_1.CreateGraphData)(dataForYear, req.body.demographic);
+        }
+    }
+    catch (error) {
+        console.log(error.toJSON());
+    }
+    finally {
+        res.status(200).json({
+            body: responseBody,
+        });
+    }
 };
 exports.getDemographics = getDemographics;
 const getCount = async (req, res) => {
-    const apiResponse = await axios_1.default.get(getDemographicsURL(req.body.offense, "count", req.body.location, "offender"));
-    const results = apiResponse.data.results;
-    res.status(200).json({
-        body: results.length > 0
-            ? [
+    let responseBody = {};
+    try {
+        const apiResponse = await axios_1.default.get(getDemographicsURL(req.body.offense, "count", req.body.location, "offender"));
+        const results = apiResponse.data.results;
+        if (results.length > 0) {
+            responseBody = [
                 (0, DataConverters_1.CreateCountDataAcrossYears)(apiResponse.data.results, "Counts for " + req.body.location),
                 (0, DataConverters_1.CreateCountPercentageChangedDataAcrossYears)(apiResponse.data.results, "Percentage Changed of Counts for " + req.body.location),
-            ]
-            : {},
-    });
+            ];
+        }
+    }
+    catch (error) {
+        console.log(error.toJSON());
+    }
+    finally {
+        res.status(200).json({
+            body: responseBody,
+        });
+    }
 };
 exports.getCount = getCount;

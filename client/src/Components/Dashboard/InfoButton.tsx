@@ -29,7 +29,6 @@ export const InfoButton: React.FC<InfoButtonProps> = (props: InfoButtonProps) =>
                 size="large"
                 color="inherit"
                 aria-label="clear"
-                sx={{ mr: 2, margin: 0 }}
                 aria-describedby={id}
                 onClick={handleClick}
             >
@@ -44,6 +43,7 @@ export const InfoButton: React.FC<InfoButtonProps> = (props: InfoButtonProps) =>
                     vertical: 'bottom',
                     horizontal: 'left',
                 }}
+                PaperProps={{ sx: { maxWidth: '50em' } }}
             >
                 <Typography sx={{ p: 2 }} variant="body2">
                     {infoText}

@@ -10,14 +10,25 @@ export interface DashboardProps {
 const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
     const { title, children } = props;
 
-    const [widgetIDs, setWidgetIDs] = React.useState<number[]>([0]);
+    const [widgets, setWidgets] = React.useState<Map<number, {} | undefined>>(
+        new Map([[0, undefined]]),
+    );
 
-    function widgetWasActivated(idToAdd: number): void {
-        setWidgetIDs(widgetIDs.concat(idToAdd + 1));
+    function createWidget(initialState?: {}): void {
+        let newID = Math.max(...Array.from(widgets.keys())) + 1;
+        widgets.set(newID, initialState);
+        setWidgets(new Map(widgets));
     }
 
-    function widgetWasRemoved(idToRemove: number): void {
-        setWidgetIDs(widgetIDs.filter((id) => id !== idToRemove));
+    function removeWidget(id: number): void {
+        widgets.delete(id);
+        setWidgets(new Map(widgets));
+    }
+
+    function cloneWidget(state: {}): void {
+        const lastKey = Array.from(widgets.keys()).pop() as number;
+        widgets.set(lastKey, state);
+        createWidget();
     }
 
     return (
@@ -33,12 +44,14 @@ const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
             </Box>
             <Box margin="5px">
                 <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, md: 8, lg: 12 }}>
-                    {widgetIDs.map((id) => (
+                    {Array.from(widgets.entries()).map(([id, initialState]) => (
                         <Grid item xs={4} key={id} sx={{ height: '400px' }}>
                             <Widget
                                 id={id}
-                                isActivatedCallback={widgetWasActivated}
-                                isRemovedCallback={widgetWasRemoved}
+                                isActivatedCallback={createWidget}
+                                isRemovedCallback={removeWidget}
+                                isClonedCallback={cloneWidget}
+                                initialState={initialState}
                             >
                                 {children}
                             </Widget>

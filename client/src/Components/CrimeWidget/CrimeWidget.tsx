@@ -82,19 +82,21 @@ function setShowChart(state: CrimeWidgetState): void {
 }
 
 const CrimeWidget: React.FC<WidgetChildProps> = (props) => {
-    let { id, setInfo, setTitle } = props;
+    let { id, setInfo, setClone, initialState } = props;
     if (!id) {
         id = 0;
     }
 
-    const [state, dispatch] = React.useReducer(crimeStateReducer, {});
+    const [state, dispatch] = React.useReducer(crimeStateReducer, initialState ? initialState : {});
     const { location, offense, dataType, chartType, demographic, year, showChart } = state;
 
-    if (setInfo) {
-        setInfo('Hi!');
+    if (setClone) {
+        setClone(state);
     }
-    if (setTitle) {
-        setTitle('Crime Widget');
+    if (setInfo) {
+        setInfo(
+            'Use this widget to visualize crime statistics in a graph. A graph will appear once all required variables have an option selected. If one of the variables is changed, a new graph will automatically be created.',
+        );
     }
 
     return !dataType ? (

@@ -1,29 +1,40 @@
 import React, { ReactElement } from 'react';
 import AddIcon from '@mui/icons-material/Add';
-import { Fab, Box, Paper, Typography, IconButton, Zoom } from '@mui/material';
+import { Fab, Box, Paper, IconButton, Zoom } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { InfoButton } from './InfoButton';
+import { CopyButton } from './CopyButton';
 
 export interface WidgetChildProps {
     id?: number;
     setInfo?(infoText: string): React.Dispatch<React.SetStateAction<string>>;
-    setTitle?(title: string): React.Dispatch<React.SetStateAction<string>>;
+    setClone?(clone: {}): void;
+    initialState?: {};
 }
 
 export interface WidgetProps {
     id: number;
-    isActivatedCallback(id: number): void;
+    isActivatedCallback(state?: {}): void;
     isRemovedCallback(id: number): void;
+    isClonedCallback(state: {}): void;
     children: ReactElement;
+    initialState: {} | undefined;
 }
 
 const Widget: React.FC<WidgetProps> = (props: WidgetProps) => {
-    const { id, isActivatedCallback, isRemovedCallback, children } = props;
+    const { id, isActivatedCallback, isRemovedCallback, isClonedCallback, initialState, children } =
+        props;
 
-    const [isActivated, setIsActivated] = React.useState<boolean>(false);
+    const [isActivated, setIsActivated] = React.useState<boolean>(initialState ? true : false);
     const [isClosed, setIsClosed] = React.useState<boolean>(false);
     const [infoText, setInfoText] = React.useState<string>('');
-    const [title, setTitle] = React.useState<string>('');
+    const [clone, setClone] = React.useState<{}>({});
+
+    React.useEffect(() => {
+        if (initialState) {
+            setIsActivated(true);
+        }
+    }, [initialState]);
 
     const AddWidgetButton: React.FC<{
         setIsActivated(): void;
@@ -63,22 +74,14 @@ const Widget: React.FC<WidgetProps> = (props: WidgetProps) => {
                     flexGrow: 0,
                 }}
             >
-                <InfoButton infoText={infoText} />
-                <Box
-                    display="flex"
-                    justifyContent="center"
-                    flexDirection="column"
-                    sx={{ flexGrow: 1 }}
-                >
-                    <Typography component="div" variant="h5" align="center">
-                        {title}
-                    </Typography>
+                <Box display="flex">
+                    <InfoButton infoText={infoText} />
+                    <CopyButton clone={isClonedCallback.bind(undefined, clone)} />
                 </Box>
                 <IconButton
                     size="large"
                     color="inherit"
                     aria-label="clear"
-                    sx={{ mr: 2, margin: 0 }}
                     key={'resetState' + id}
                     onClick={() => {
                         setIsClosed(true);
@@ -102,7 +105,8 @@ const Widget: React.FC<WidgetProps> = (props: WidgetProps) => {
                     {React.cloneElement(children, {
                         id: id,
                         setInfo: setInfoText,
-                        setTitle: setTitle,
+                        setClone: setClone,
+                        initialState: initialState,
                     })}
                 </Box>
             </Paper>
@@ -111,7 +115,7 @@ const Widget: React.FC<WidgetProps> = (props: WidgetProps) => {
         <AddWidgetButton
             setIsActivated={() => {
                 setIsActivated(true);
-                isActivatedCallback(id);
+                isActivatedCallback();
             }}
         />
     );
