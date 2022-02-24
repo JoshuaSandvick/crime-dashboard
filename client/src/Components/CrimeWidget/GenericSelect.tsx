@@ -33,6 +33,7 @@ const GenericSelect = <T extends unknown>(props: GenericSelectProps<T>) => {
                 id="select"
                 value={value}
                 onChange={(event) => handleSelect(event)}
+                label={title}
             >
                 {options.map((option: SelectOption) => (
                     <MenuItem value={option.value}>{option.displayValue}</MenuItem>

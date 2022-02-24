@@ -21,7 +21,7 @@ export interface WidgetProps {
     initialState: {} | undefined;
 }
 
-const Widget: React.FC<WidgetProps> = (props: WidgetProps) => {
+const Widget = React.forwardRef((props: WidgetProps, ref) => {
     const { id, isActivatedCallback, isRemovedCallback, isClonedCallback, initialState, children } =
         props;
 
@@ -107,6 +107,7 @@ const Widget: React.FC<WidgetProps> = (props: WidgetProps) => {
                         setInfo: setInfoText,
                         setClone: setClone,
                         initialState: initialState,
+                        ref: ref,
                     })}
                 </Box>
             </Paper>
@@ -119,6 +120,6 @@ const Widget: React.FC<WidgetProps> = (props: WidgetProps) => {
             }}
         />
     );
-};
+});
 
 export default Widget;

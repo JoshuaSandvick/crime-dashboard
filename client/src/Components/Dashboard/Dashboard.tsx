@@ -1,6 +1,8 @@
 import React, { ReactElement } from 'react';
 import { Grid, Box, AppBar, Typography, Toolbar } from '@mui/material';
 import Widget from './Widget';
+import DashboardAppBar from './DashboardAppBar';
+import axios from 'axios';
 
 export interface DashboardProps {
     title: string;
@@ -13,6 +15,8 @@ const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
     const [widgets, setWidgets] = React.useState<Map<number, {} | undefined>>(
         new Map([[0, undefined]]),
     );
+
+    const widgetRefs = React.useRef(new Map());
 
     function createWidget(initialState?: {}): void {
         let newID = Math.max(...Array.from(widgets.keys())) + 1;
@@ -31,17 +35,34 @@ const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
         createWidget();
     }
 
+    function loadDashboard(loadedWidgets: any) {
+        let newBaseID = Math.max(...Array.from(widgets.keys())) + 1;
+        const newWidgets = new Map<number, {} | undefined>(
+            loadedWidgets.map((widgetState: any, idx: number) => {
+                return [idx + newBaseID, widgetState];
+            }),
+        );
+        newWidgets.set(newBaseID + newWidgets.size, undefined);
+
+        setWidgets(newWidgets);
+    }
+
+    function getWidgetStates(): any[] {
+        const widgetStates: any[] = [];
+        widgetRefs.current.forEach(({ getState }) => {
+            widgetStates.push(getState());
+        });
+
+        return widgetStates;
+    }
+
     return (
         <>
-            <Box sx={{ flexGrow: 1, marginBottom: 3 }}>
-                <AppBar position="static">
-                    <Toolbar>
-                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                            {title}
-                        </Typography>
-                    </Toolbar>
-                </AppBar>
-            </Box>
+            <DashboardAppBar
+                title={title}
+                loadDashboard={loadDashboard}
+                getWidgetStates={getWidgetStates}
+            />
             <Box margin="5px">
                 <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, md: 8, lg: 12 }}>
                     {Array.from(widgets.entries()).map(([id, initialState]) => (
@@ -52,6 +73,7 @@ const Dashboard: React.FC<DashboardProps> = (props: DashboardProps) => {
                                 isRemovedCallback={removeWidget}
                                 isClonedCallback={cloneWidget}
                                 initialState={initialState}
+                                ref={(el) => widgetRefs.current.set(id, el)}
                             >
                                 {children}
                             </Widget>

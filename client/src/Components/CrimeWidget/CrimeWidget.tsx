@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useImperativeHandle } from 'react';
 import { ChartComponent } from './Chart';
 import { WidgetChildProps } from '../Dashboard/Widget';
 import GenericSelect from './GenericSelect';
@@ -81,7 +81,7 @@ function setShowChart(state: CrimeWidgetState): void {
     return;
 }
 
-const CrimeWidget: React.FC<WidgetChildProps> = (props) => {
+const CrimeWidget = React.forwardRef((props: WidgetChildProps, ref) => {
     let { id, setInfo, setClone, initialState } = props;
     if (!id) {
         id = 0;
@@ -89,6 +89,16 @@ const CrimeWidget: React.FC<WidgetChildProps> = (props) => {
 
     const [state, dispatch] = React.useReducer(crimeStateReducer, initialState ? initialState : {});
     const { location, offense, dataType, chartType, demographic, year, showChart } = state;
+
+    useImperativeHandle(
+        ref,
+        () => ({
+            getState: () => {
+                return state;
+            },
+        }),
+        [state],
+    );
 
     if (setClone) {
         setClone(state);
@@ -140,6 +150,6 @@ const CrimeWidget: React.FC<WidgetChildProps> = (props) => {
             </Stack>
         </Box>
     );
-};
+});
 
 export default CrimeWidget;

@@ -7,6 +7,7 @@ import {
   DemographicDataFromCDE,
 } from "./DataConverters";
 import VisualizationData from "./VisualizationData";
+import { getUsers } from "../database/database";
 
 function getDemographicsURL(
   offense: string,
@@ -59,6 +60,8 @@ export const getDemographics = async (req: Request, res: Response) => {
 
 export const getCount = async (req: Request, res: Response) => {
   let responseBody: VisualizationData[] | {} = {};
+
+  getUsers();
 
   try {
     const apiResponse = await axios.get(
