@@ -1,5 +1,15 @@
 import axios from 'axios';
 
+export async function addUserToDB(userID: string) {
+    await axios({
+        method: 'post',
+        url: '/api/v1/add-user',
+        data: {
+            userID: userID,
+        },
+    });
+}
+
 export async function loadDashboardsListFromDB(userID: string) {
     const response = await axios({
         method: 'post',

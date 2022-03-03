@@ -4,12 +4,13 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import path from "path";
 import api from "./routes/routes";
+require("dotenv").config();
 
 // Create a new express application named 'app'
 const app = express();
 
 // Set our backend port to be either an environment variable or port 5000
-const port = process.env.PORT || 5000;
+const port = process.env.PORT;
 
 // This application level middleware prints incoming requests to the servers console, useful to see incoming requests
 app.use((req, res, next) => {

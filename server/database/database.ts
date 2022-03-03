@@ -1,18 +1,50 @@
-import sqlite3 from "sqlite3";
-import { open, Database } from "sqlite";
+import { Client } from "pg";
 import path from "path";
 
 async function openDb() {
-  return open({
-    filename: path.join(__dirname, "./crime_dboard_db.db"),
-    driver: sqlite3.Database,
-  });
+  const databaseConfig = process.env.DATABASE_URL
+    ? {
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+          rejectUnauthorized: false,
+        },
+      }
+    : {
+        user: process.env.DB_USER,
+        host: process.env.DB_HOST,
+        database: process.env.DB_NAME,
+        password: process.env.DB_PASS,
+        port: parseInt(process.env.DB_PORT ? process.env.DB_PORT : ""),
+      };
+  const client = new Client(databaseConfig);
+  await client.connect();
+  return client;
 }
 
 export async function getUsers() {
   const db = await openDb();
-  const result = await db.get("SELECT * FROM User");
-  await db.close();
+  const result = await db.query("SELECT * FROM Users");
+  await db.end();
+}
+
+export async function addUser(userID: string) {
+  let success = true;
+  let db: Client | undefined = undefined;
+  try {
+    db = await openDb();
+    await db.query("INSERT INTO Users(ID) VALUES ($1) ON CONFLICT DO NOTHING", [
+      userID,
+    ]);
+  } catch (error) {
+    console.log(error);
+    success = false;
+  } finally {
+    if (db) {
+      db.end();
+    }
+  }
+
+  return success;
 }
 
 export async function saveDashboard(
@@ -21,19 +53,19 @@ export async function saveDashboard(
   widgets: string
 ) {
   let success = true;
-  let db: Database<sqlite3.Database, sqlite3.Statement> | undefined = undefined;
+  let db: Client | undefined = undefined;
   try {
     db = await openDb();
-    const result = await db.run(
-      "INSERT INTO Dashboard VALUES ($id, $userID, $widgets)",
-      { $id: dashboardID, $userID: userID, $widgets: widgets }
+    const result = await db.query(
+      "INSERT INTO Dashboard VALUES ($1, $2, $3) ON CONFLICT (id) DO UPDATE SET (id, user_id, widgets) = (EXCLUDED.id, EXCLUDED.user_id, EXCLUDED.widgets)",
+      [dashboardID, userID, widgets]
     );
   } catch (error) {
     console.log(error);
     success = false;
   } finally {
     if (db) {
-      db.close();
+      db.end();
     }
   }
 
@@ -41,37 +73,41 @@ export async function saveDashboard(
 }
 
 export async function loadDashboard(dashboardID: string) {
-  let result: any;
-  let db: Database<sqlite3.Database, sqlite3.Statement> | undefined = undefined;
+  let widgets: any;
+  let db: Client | undefined = undefined;
   try {
     db = await openDb();
-    result = await db.get(
-      "SELECT Widgets FROM Dashboard WHERE ID = ?",
-      dashboardID
+    const result = await db.query(
+      "SELECT Widgets FROM Dashboard WHERE ID = $1",
+      [dashboardID]
     );
-    result = result ? result.Widgets : result;
+    widgets = result.rows[0].widgets;
   } catch (error) {
     console.log(error);
   } finally {
     if (db) {
-      db.close();
+      db.end();
     }
   }
 
-  return result;
+  return widgets;
 }
 
 export async function loadDashboardsList(userID: string) {
   let result: any;
-  let db: Database<sqlite3.Database, sqlite3.Statement> | undefined = undefined;
+  let db: Client | undefined = undefined;
   try {
     db = await openDb();
-    result = await db.all("SELECT ID FROM Dashboard WHERE User_ID = ?", userID);
+    let dashboardsList = await db.query(
+      "SELECT ID FROM Dashboard WHERE User_ID = $1",
+      [userID]
+    );
+    result = dashboardsList.rows;
   } catch (error) {
     console.log(error);
   } finally {
     if (db) {
-      db.close();
+      db.end();
     }
   }
 

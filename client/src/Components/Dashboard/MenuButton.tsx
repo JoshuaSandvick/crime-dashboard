@@ -12,10 +12,19 @@ export interface MenuButtonProps {
     getWidgetStates(): any[];
     loadDashboard(widgets: any): void;
     savedDashboards: string[];
+    reloadDashboards(): void;
+    showErrorDialog(errorMessage: string): void;
 }
 
 const MenuButton: React.FC<MenuButtonProps> = (props) => {
-    const { userID, getWidgetStates, loadDashboard, savedDashboards } = props;
+    const {
+        userID,
+        getWidgetStates,
+        loadDashboard,
+        savedDashboards,
+        reloadDashboards,
+        showErrorDialog,
+    } = props;
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [loadDialogOpen, setLoadDialogOpen] = React.useState<boolean>(false);
@@ -32,7 +41,11 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
     const handleLoadDialogClose = async (dashboardID?: string) => {
         setLoadDialogOpen(false);
         if (dashboardID) {
-            loadDashboard(await loadDashboardFromDB(dashboardID));
+            try {
+                loadDashboard(await loadDashboardFromDB(dashboardID));
+            } catch (error) {
+                showErrorDialog('Failed to load dashboard');
+            }
         }
         handleClose();
     };
@@ -40,7 +53,12 @@ const MenuButton: React.FC<MenuButtonProps> = (props) => {
     const handleSaveDialogClose = async (dashboardID?: string) => {
         setSaveDialogOpen(false);
         if (dashboardID && userID) {
-            saveDashboardToDB(userID, dashboardID, getWidgetStates());
+            try {
+                await saveDashboardToDB(userID, dashboardID, getWidgetStates());
+                reloadDashboards();
+            } catch (error) {
+                showErrorDialog('Failed to save dashboard');
+            }
         }
         handleClose();
     };

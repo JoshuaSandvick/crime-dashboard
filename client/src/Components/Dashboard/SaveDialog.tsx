@@ -14,10 +14,11 @@ export interface SaveDialogProps {
 const SaveDialog: React.FC<SaveDialogProps> = (props) => {
     const { open, onClose } = props;
 
-    const [dashboardID, setDashboardID] = React.useState<string>();
+    const [dashboardID, setDashboardID] = React.useState<string>('');
 
     const handleClose = () => {
         onClose(dashboardID);
+        setDashboardID('');
     };
 
     return (
@@ -38,7 +39,7 @@ const SaveDialog: React.FC<SaveDialogProps> = (props) => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleClose} disabled={!Boolean(dashboardID)}>
+                    <Button onClick={handleClose} disabled={dashboardID.length === 0}>
                         Save
                     </Button>
                 </DialogActions>

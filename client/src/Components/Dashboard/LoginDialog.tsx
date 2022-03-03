@@ -14,10 +14,11 @@ export interface LoginDialogProps {
 const LoginDialog: React.FC<LoginDialogProps> = (props) => {
     const { open, onClose } = props;
 
-    const [username, setUsername] = React.useState<string>();
+    const [username, setUsername] = React.useState<string>('');
 
     const handleClose = () => {
         onClose(username);
+        setUsername('');
     };
 
     return (
@@ -38,7 +39,7 @@ const LoginDialog: React.FC<LoginDialogProps> = (props) => {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleClose} disabled={!Boolean(username)}>
+                    <Button onClick={handleClose} disabled={username.length === 0}>
                         Login
                     </Button>
                 </DialogActions>

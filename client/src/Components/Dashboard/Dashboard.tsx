@@ -1,8 +1,7 @@
 import React, { ReactElement } from 'react';
-import { Grid, Box, AppBar, Typography, Toolbar } from '@mui/material';
+import { Grid, Box } from '@mui/material';
 import Widget from './Widget';
 import DashboardAppBar from './DashboardAppBar';
-import axios from 'axios';
 
 export interface DashboardProps {
     title: string;

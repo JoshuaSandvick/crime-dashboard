@@ -3,6 +3,7 @@ import {
   saveDashboard as saveDashboardToDB,
   loadDashboard as loadDashboardFromDB,
   loadDashboardsList as loadDashboardsListFromDB,
+  addUser as addUserToDB,
 } from "../database/database";
 
 export const saveDashboard = async (req: Request, res: Response) => {
@@ -42,5 +43,17 @@ export const loadDashboardsList = async (req: Request, res: Response) => {
     console.log(error);
   } finally {
     result ? res.status(200).json({ body: result }) : res.status(500).json();
+  }
+};
+
+export const addUser = async (req: Request, res: Response) => {
+  let success = true;
+
+  try {
+    success = await addUserToDB(req.body.userID);
+  } catch (error) {
+    console.log(error);
+  } finally {
+    success ? res.status(200).json() : res.status(500).json();
   }
 };

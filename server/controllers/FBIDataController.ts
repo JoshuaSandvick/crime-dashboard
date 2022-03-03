@@ -24,7 +24,8 @@ function getDemographicsURL(
     (location === "USA" ? "national/" : "states/" + location) +
     "/" +
     demographic +
-    "?API_KEY=HjPXTM86aVOOEROPonTUllReA8n7T3mw9TcuaDtw"
+    "?API_KEY=" +
+    process.env.CDE_API_KEY
   );
 }
 
