@@ -1,6 +1,7 @@
-import React from 'react';
-import { Box, AppBar, Typography, Toolbar, Button } from '@mui/material';
+import React, { ReactElement } from 'react';
+import { Box, AppBar, Typography, Toolbar, Button, Stack } from '@mui/material';
 import MenuButton from './MenuButton';
+import { InfoButton } from './InfoButton';
 import LoginDialog from './LoginDialog';
 import ErrorDialog from './ErrorDialog';
 import { loadDashboardsListFromDB, addUserToDB } from './DashboardStoring';
@@ -9,16 +10,20 @@ export interface DashboardAppBarProps {
     title: string;
     loadDashboard(widgets: any): void;
     getWidgetStates(): any[];
+    addTutorialElement(el: Element, text: string): void;
+    tutorialContent: ReactElement;
 }
 
 const DashboardAppBar: React.FC<DashboardAppBarProps> = (props) => {
-    const { title, loadDashboard, getWidgetStates } = props;
+    const { title, loadDashboard, getWidgetStates, addTutorialElement, tutorialContent } = props;
 
     const [userID, setUser] = React.useState<string>();
     const [userSavedDashboards, setUserSavedDashboards] = React.useState<string[]>([]);
     const [loginDialogOpen, setLoginDialogOpen] = React.useState<boolean>(false);
     const [errorDialogOpen, setErrorDialogOpen] = React.useState<boolean>(false);
     const [errorMessage, setErrorMessage] = React.useState<string>('');
+
+    const infoButtonRef = React.useRef<Element>(null);
 
     const handleLoginDialogClose = async (userID?: string) => {
         if (userID) {
@@ -61,6 +66,15 @@ const DashboardAppBar: React.FC<DashboardAppBarProps> = (props) => {
         getUserSavedDashboards();
     }, [getUserSavedDashboards]);
 
+    React.useEffect(() => {
+        if (infoButtonRef.current) {
+            addTutorialElement(
+                infoButtonRef.current,
+                'Click this button to learn how to use this app',
+            );
+        }
+    }, []);
+
     return (
         <>
             <Box sx={{ flexGrow: 1, marginBottom: 3 }}>
@@ -74,9 +88,14 @@ const DashboardAppBar: React.FC<DashboardAppBarProps> = (props) => {
                             getWidgetStates={getWidgetStates}
                             showErrorDialog={showErrorDialog}
                         />
-                        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                            {title}
-                        </Typography>
+                        <Stack direction="row" alignItems="center" sx={{ flexGrow: 1 }}>
+                            <Typography variant="h6" component="div">
+                                {title}
+                            </Typography>
+                            <Box ref={infoButtonRef}>
+                                <InfoButton content={tutorialContent} />
+                            </Box>
+                        </Stack>
                         <Button color="inherit" onClick={() => setLoginDialogOpen(true)}>
                             Login
                         </Button>

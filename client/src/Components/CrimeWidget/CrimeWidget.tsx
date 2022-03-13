@@ -82,7 +82,7 @@ function setShowChart(state: CrimeWidgetState): void {
 }
 
 const CrimeWidget = React.forwardRef((props: WidgetChildProps, ref) => {
-    let { id, setInfo, setClone, initialState } = props;
+    let { id, setClone, initialState } = props;
     if (!id) {
         id = 0;
     }
@@ -102,11 +102,6 @@ const CrimeWidget = React.forwardRef((props: WidgetChildProps, ref) => {
 
     if (setClone) {
         setClone(state);
-    }
-    if (setInfo) {
-        setInfo(
-            'Use this widget to visualize crime statistics in a graph. A graph will appear once all required variables have an option selected. If one of the variables is changed, a new graph will automatically be created.',
-        );
     }
 
     return !dataType ? (

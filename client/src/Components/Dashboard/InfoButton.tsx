@@ -1,14 +1,13 @@
-import React from 'react';
-import { IconButton, Typography, Popover } from '@mui/material';
+import React, { ReactElement } from 'react';
+import { IconButton, Popover } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
 
 export interface InfoButtonProps {
-    id?: string;
-    infoText: string;
+    content: ReactElement;
 }
 
 export const InfoButton: React.FC<InfoButtonProps> = (props: InfoButtonProps) => {
-    const { infoText } = props;
+    const { content } = props;
 
     const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
 
@@ -24,7 +23,7 @@ export const InfoButton: React.FC<InfoButtonProps> = (props: InfoButtonProps) =>
     const id = open ? 'info-popover' : undefined;
 
     return (
-        <div>
+        <>
             <IconButton
                 size="large"
                 color="inherit"
@@ -45,10 +44,8 @@ export const InfoButton: React.FC<InfoButtonProps> = (props: InfoButtonProps) =>
                 }}
                 PaperProps={{ sx: { maxWidth: '50em' } }}
             >
-                <Typography sx={{ p: 2 }} variant="body2">
-                    {infoText}
-                </Typography>
+                {content}
             </Popover>
-        </div>
+        </>
     );
 };

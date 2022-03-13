@@ -2,7 +2,6 @@ import React, { ReactElement } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import { Fab, Box, Paper, IconButton, Zoom } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
-import { InfoButton } from './InfoButton';
 import { CopyButton } from './CopyButton';
 
 export interface WidgetChildProps {
@@ -19,16 +18,25 @@ export interface WidgetProps {
     isClonedCallback(state: {}): void;
     children: ReactElement;
     initialState: {} | undefined;
+    addTutorialElement(el: Element, text: string): void;
 }
 
 const Widget = React.forwardRef((props: WidgetProps, ref) => {
-    const { id, isActivatedCallback, isRemovedCallback, isClonedCallback, initialState, children } =
-        props;
+    const {
+        id,
+        isActivatedCallback,
+        isRemovedCallback,
+        isClonedCallback,
+        initialState,
+        addTutorialElement,
+        children,
+    } = props;
 
     const [isActivated, setIsActivated] = React.useState<boolean>(initialState ? true : false);
     const [isClosed, setIsClosed] = React.useState<boolean>(false);
-    const [infoText, setInfoText] = React.useState<string>('');
     const [clone, setClone] = React.useState<{}>({});
+
+    const addWidgetButtonRef = React.useRef<HTMLButtonElement>(null);
 
     React.useEffect(() => {
         if (initialState) {
@@ -36,28 +44,14 @@ const Widget = React.forwardRef((props: WidgetProps, ref) => {
         }
     }, [initialState]);
 
-    const AddWidgetButton: React.FC<{
-        setIsActivated(): void;
-    }> = ({ setIsActivated }) => {
-        return (
-            <Zoom in={true} timeout={400} exit={false}>
-                <Box display="flex" justifyContent="center" flexDirection="column" height="100%">
-                    <Box display="flex" justifyContent="center">
-                        <Fab
-                            color="primary"
-                            variant="extended"
-                            onClick={() => {
-                                setIsActivated();
-                            }}
-                        >
-                            <AddIcon />
-                            Add Widget
-                        </Fab>
-                    </Box>
-                </Box>
-            </Zoom>
-        );
-    };
+    React.useEffect(() => {
+        if (id === 0 && addWidgetButtonRef.current) {
+            addTutorialElement(
+                addWidgetButtonRef.current,
+                '... or use this one to just get going!',
+            );
+        }
+    }, [id]);
 
     const WidgetHeader: React.FC<{
         setIsClosed: (value: React.SetStateAction<boolean>) => void;
@@ -75,7 +69,6 @@ const Widget = React.forwardRef((props: WidgetProps, ref) => {
                 }}
             >
                 <Box display="flex">
-                    <InfoButton infoText={infoText} />
                     <CopyButton clone={isClonedCallback.bind(undefined, clone)} />
                 </Box>
                 <IconButton
@@ -104,7 +97,6 @@ const Widget = React.forwardRef((props: WidgetProps, ref) => {
                     <WidgetHeader setIsClosed={setIsClosed} />
                     {React.cloneElement(children, {
                         id: id,
-                        setInfo: setInfoText,
                         setClone: setClone,
                         initialState: initialState,
                         ref: ref,
@@ -118,8 +110,36 @@ const Widget = React.forwardRef((props: WidgetProps, ref) => {
                 setIsActivated(true);
                 isActivatedCallback();
             }}
+            buttonRef={addWidgetButtonRef}
+            zoomIn={id !== 0}
         />
     );
 });
+
+const AddWidgetButton: React.FC<{
+    setIsActivated(): void;
+    buttonRef: React.RefObject<HTMLButtonElement>;
+    zoomIn: boolean;
+}> = ({ setIsActivated, buttonRef, zoomIn }) => {
+    return (
+        <Zoom in={true} appear={zoomIn} timeout={400} exit={false}>
+            <Box display="flex" justifyContent="center" flexDirection="column" height="100%">
+                <Box display="flex" justifyContent="center">
+                    <Fab
+                        color="primary"
+                        variant="extended"
+                        onClick={() => {
+                            setIsActivated();
+                        }}
+                        ref={buttonRef}
+                    >
+                        <AddIcon />
+                        Add Widget
+                    </Fab>
+                </Box>
+            </Box>
+        </Zoom>
+    );
+};
 
 export default Widget;
