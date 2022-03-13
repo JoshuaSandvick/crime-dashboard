@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react';
-import { IconButton, Popover } from '@mui/material';
+import { IconButton } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
+import InfoDialog from './TutorialDialog';
 
 export interface InfoButtonProps {
     content: ReactElement;
@@ -9,17 +10,8 @@ export interface InfoButtonProps {
 export const InfoButton: React.FC<InfoButtonProps> = (props: InfoButtonProps) => {
     const { content } = props;
 
-    const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+    const [open, setOpen] = React.useState<boolean>(false);
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const open = Boolean(anchorEl);
     const id = open ? 'info-popover' : undefined;
 
     return (
@@ -29,23 +21,11 @@ export const InfoButton: React.FC<InfoButtonProps> = (props: InfoButtonProps) =>
                 color="inherit"
                 aria-label="clear"
                 aria-describedby={id}
-                onClick={handleClick}
+                onClick={() => setOpen(true)}
             >
                 <InfoIcon />
             </IconButton>
-            <Popover
-                id={id}
-                open={open}
-                anchorEl={anchorEl}
-                onClose={handleClose}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                }}
-                PaperProps={{ sx: { margin: '20px' } }}
-            >
-                {content}
-            </Popover>
+            <InfoDialog open={open} onClose={() => setOpen(false)} content={content} />
         </>
     );
 };
