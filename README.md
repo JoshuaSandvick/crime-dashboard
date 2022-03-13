@@ -2,6 +2,8 @@
 
 The goal of this project is to create a dashboard that can be used to visualize data from the FBI Crime Data Explorer (CDE). The intended use case is to compare data between the state and national level. The FBI specifically states that the CDE data is not intended to be used to compare between states.
 
+The web app is hosted [here](http://crime-dboard.herokuapp.com/).
+
 # Features
 
 ### Dashboard
@@ -39,4 +41,11 @@ These are the currently-supported datasets and their parameters:
   * Node.js
   * Express
   * PostgreSQL
+
+# Future Enhancements
+* Allow widgets to be dragged to new positions
+* Add unit tests
+* Add regional locations
+* Add more offense types
+* Add Google Authentication
 
