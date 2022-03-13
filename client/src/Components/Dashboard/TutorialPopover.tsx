@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography, Popover, Stack } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowUpIcon from '@mui/icons-material/ArrowUpward';
 
 export interface TutorialPopoverProps {
     anchorElement: Element;
@@ -15,16 +15,16 @@ const TutorialPopover: React.FC<TutorialPopoverProps> = (props) => {
         <Popover
             open={open}
             anchorEl={anchorElement}
-            anchorOrigin={{ vertical: 'center', horizontal: 'right' }}
-            transformOrigin={{ vertical: 'center', horizontal: 'left' }}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'center' }}
             elevation={0}
             PaperProps={{ sx: { backgroundColor: 'transparent' } }}
         >
-            <Stack direction="row" alignItems="center">
-                <ArrowBackIcon sx={{ color: 'white', marginRight: '10px' }} />
+            <Stack direction="column" alignItems="center">
+                <ArrowUpIcon sx={{ color: 'white', padding: '1px' }} />
                 <Typography
                     variant="h5"
-                    sx={{ color: 'white', fontStyle: 'italic', marginRight: '10px' }}
+                    sx={{ color: 'white', fontStyle: 'italic', padding: '5px' }}
                     align="center"
                 >
                     {text}
