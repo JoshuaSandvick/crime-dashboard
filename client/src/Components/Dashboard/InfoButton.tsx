@@ -42,7 +42,7 @@ export const InfoButton: React.FC<InfoButtonProps> = (props: InfoButtonProps) =>
                     vertical: 'bottom',
                     horizontal: 'left',
                 }}
-                PaperProps={{ sx: { maxWidth: '90vw', maxHeight: '90vh' } }}
+                PaperProps={{ sx: { margin: '20px' } }}
             >
                 {content}
             </Popover>
